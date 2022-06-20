@@ -5,6 +5,7 @@ The following implementations are available:
 - `ShuffGaussRDPtoDP`: Shuffle Gaussian mechanism
 - `SubShuffGaussRDPtoDP`: Subsampled Shuffle Gaussian mechanism
 - `ApproxSCIGaussRDPtoDP`: [Shuffled Check-in](http://arxiv.org/abs/2206.03151) Gaussian mechanism
+
 Our implementation particularly allows fast comparisons of (epsilon, delta) at different numbers of composition. See [Usage](#usage).
 
 # Installation
