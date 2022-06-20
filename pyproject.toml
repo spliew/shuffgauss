@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "shuffgauss"
+version = "0.1.0"
+description = "A package to calculate shuffle gaussian mechanism."
+authors = ["spliew <seng2pei@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.11"
+numpy = "^1.22.4"
+scipy = "^1.8.1"
+tqdm = "^4.64.0"
+
+[tool.poetry.dev-dependencies]
+black = "^22.3.0"
+isort = "^5.10.1"
+ipykernel = "^6.13.0"
+tabulate = "^0.8.9"
+matplotlib = "^3.5.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
