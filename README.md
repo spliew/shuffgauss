@@ -47,4 +47,14 @@ print(ssg.get_eps(delta, 10)) # calculate epsilon when no of composition is 10
 # Citation
 If you use this code in your work, please cite our paper:
 
+```
+@article{liew2022shuffle,
+  title={Shuffle Gaussian Mechanism for Differential Privacy},
+  author={Liew, Seng Pei and Takahashi, Tsubasa},
+  journal={arXiv preprint arXiv:2206.09569},
+  year={2022}
+}
+```
+
+
 This code is heavily influenced by [autodp](https://github.com/yuxiangw/autodp).
