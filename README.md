@@ -37,7 +37,7 @@ sf.get_shuff() # prepare the calculation
 print(sf.get_eps(delta, 1)) # calculate epsilon when no of composition is 1
 print(sf.get_eps(delta, 10)) # calculate epsilon when no of composition is 10
 
-# subsampled gaussian mechanism
+# subsampled shuffle gaussian mechanism
 ssg = sg.SubShuffGaussRDPtoDP(sigma, n, m, mxlmbda)
 ssg.get_subshuff() # prepare the calculation
 print(ssg.get_eps(delta, 1)) # calculate epsilon when no of composition is 1
