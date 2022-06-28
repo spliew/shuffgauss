@@ -27,21 +27,21 @@ import shuffgauss as sg
 # setting up parameters
 sigma = 1 # gauss std deviation
 n = 6e5 # total number of users
-m = 6e4 # number of subsampled users
+m = 6e4 # expected no. of subsampled users. we assume sampling_rate = m/n
 delta = 1/n  # differential privacy parameter
 mxlmbda = 20 # maximum rdp moment to calculate
 
 # shuffle gaussian mechanism
 sf = sg.ShuffGaussRDPtoDP(sigma, n, mxlmbda)
 sf.get_shuff() # prepare the calculation
-print(sf.get_eps(delta, 1)) # calculate epsilon when no of composition is 1
+print(sf.get_eps(delta, 1)) # calculate epsilon when no of composition is 1, return a tuple of (epsilon, lmbda_min)
 print(sf.get_eps(delta, 10)) # calculate epsilon when no of composition is 10
 
-# subsampled shuffle gaussian mechanism
-ssg = sg.SubShuffGaussRDPtoDP(sigma, n, m, mxlmbda)
-ssg.get_subshuff() # prepare the calculation
-print(ssg.get_eps(delta, 1)) # calculate epsilon when no of composition is 1
-print(ssg.get_eps(delta, 10)) # calculate epsilon when no of composition is 10
+# shuffled checkin gaussian mechanism
+sci = sg.ApproxSCIGaussRDPtoDP(sigma, n, m, mxlmbda)
+sci.get_subshuff() # prepare the calculation
+print(sci.get_eps(delta, 1)) # calculate epsilon when no of composition is 1
+print(sci.get_eps(delta, 10)) # calculate epsilon when no of composition is 10
 ```
 
 # Citation
