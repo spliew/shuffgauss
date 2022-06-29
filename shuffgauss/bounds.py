@@ -12,7 +12,7 @@ import numpy as np
 from tqdm import tqdm
 
 from .utils import (eff_log_multinomial_coeff, findCombinations, fun_int,
-                    get_binom_coeffs, stable_logsumexp)
+                    get_binom_coeffs, stable_logsumexp, accel_asc)
 
 
 def _check_delta(delta):
@@ -33,8 +33,9 @@ def shuffle_gauss_rdp(lmbda: int, sigma0: float = 1, n: int = 100):
     """Returns the shuffle gaussian RDP"""
     if lmbda > 100:
         warnings.warn("This will probably take a long time.")
-    partitions = []
-    findCombinations(lmbda, partitions)
+    # partitions = []
+    # findCombinations(lmbda, partitions)
+    partitions = accel_asc(lmbda)
     multinom = []
     for parts in partitions:
         multicoeff = eff_log_multinomial_coeff(parts, n)
