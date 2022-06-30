@@ -6,6 +6,11 @@ The following implementations are available:
 - `SubShuffGaussRDPtoDP`: Subsampled Shuffle Gaussian mechanism
 - `ApproxSCIGaussRDPtoDP`: [Shuffled Check-in](http://arxiv.org/abs/2206.03151) Gaussian mechanism
 
+The following *faster* implementations are available in beta version:
+- `FastShuffGaussRDPtoDP`: Shuffle Gaussian mechanism
+- `FastSubShuffGaussRDPtoDP`: Subsampled Shuffle Gaussian mechanism
+- `FASCIGaussRDPtoDP`: [Shuffled Check-in](http://arxiv.org/abs/2206.03151) Gaussian mechanism
+
 Our implementation particularly allows fast comparisons of (epsilon, delta) at different numbers of composition. See [Usage](#usage).
 
 # Installation
@@ -42,6 +47,11 @@ sci = sg.ApproxSCIGaussRDPtoDP(sigma, n, m, mxlmbda)
 sci.get_subshuff() # prepare the calculation
 print(sci.get_eps(delta, 1)) # calculate epsilon when no of composition is 1
 print(sci.get_eps(delta, 10)) # calculate epsilon when no of composition is 10
+
+# fast shuffled checkin gaussian mechanism
+fastsci = sg.FASCIGaussRDPtoDP(sigma, n, m)
+print(fastsci.get_eps_fast(delta,1000))
+
 ```
 
 # Citation
