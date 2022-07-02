@@ -69,7 +69,9 @@ def log_multinomial_coeff(c):
     c = np.array(c)
     return gammaln(c.sum() + 1) - gammaln(c + 1).sum()
 
+
 # fast partition. from https://jeromekelleher.net/generating-integer-partitions.html
+
 
 def accel_asc(n):
     a = [0 for i in range(n + 1)]
@@ -86,57 +88,12 @@ def accel_asc(n):
         while x <= y:
             a[k] = x
             a[l] = y
-            yield a[:k + 2]
+            yield a[: k + 2]
             x += 1
             y -= 1
         a[k] = x + y
         y = x + y - 1
-        yield a[:k + 1]
-
-def findCombinationsUtil(arr, index, num, reducedNum, s):
-
-    # Base condition
-    if reducedNum < 0:
-        return
-
-    # If combination is
-    # found, print it
-    if reducedNum == 0:
-        s.append(arr[:index])
-        # for i in range(index):
-        # print(arr[i], end = " ")
-        # print("")
-        return
-
-    # Find the previous number stored in arr[].
-    # It helps in maintaining increasing order
-    prev = 1 if (index == 0) else arr[index - 1]
-
-    # note loop starts from previous
-    # number i.e. at array location
-    # index - 1
-    for k in range(prev, num + 1):
-
-        # next element of array is k
-        arr[index] = k
-
-        # call recursively with
-        # reduced number
-        findCombinationsUtil(arr, index + 1, num, reducedNum - k, s)
-
-
-# Function to find out all
-# combinations of positive numbers
-# that add upto given number.
-# It uses findCombinationsUtil()
-def findCombinations(n, s):
-
-    # array to store the combinations
-    # It can contain max n elements
-    arr = [0] * n
-
-    # find all combinations
-    findCombinationsUtil(arr, 0, n, n, s)
+        yield a[: k + 1]
 
 
 def stable_logsumexp(x):
@@ -150,8 +107,6 @@ def stable_logsumexp_two(x, y):
         return a
     else:
         return a + np.log(np.exp(x - a) + np.exp(y - a))
-
-
 
 
 def logcomb(n, k):

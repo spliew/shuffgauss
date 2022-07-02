@@ -5,7 +5,7 @@ __all__ = [
     "ApproxSCIGaussRDPtoDP",
     "FastShuffGaussRDPtoDP",
     "FastSubShuffGaussRDPtoDP",
-    "FASCIGaussRDPtoDP"
+    "FASCIGaussRDPtoDP",
 ]
 
 import warnings
@@ -14,8 +14,13 @@ from functools import partial
 import numpy as np
 from tqdm import tqdm
 
-from .utils import (eff_log_multinomial_coeff, findCombinations, fun_int,
-                    get_binom_coeffs, stable_logsumexp, accel_asc)
+from .utils import (
+    eff_log_multinomial_coeff,
+    fun_int,
+    get_binom_coeffs,
+    stable_logsumexp,
+    accel_asc,
+)
 
 
 def _check_delta(delta):
@@ -106,15 +111,17 @@ def get_subshuff_gauss_rdp(
 
 
 def get_approxsci_gauss_rdp(
-       lmbda: int, sigma0: float = 1, gamma: float = 0.1, subno: int = 10, error = 0.5
+    lmbda: int, sigma0: float = 1, gamma: float = 0.1, subno: int = 10, error=0.5
 ):
     chernoff_factor = -1 * subno * error**2 / 2
     displaced_n = int((1 - error) * subno) + 1
 
-    factor1 = get_subshuff_gauss_rdp(lmbda, sigma0, gamma, 1)*(lmbda-1) + chernoff_factor
-    factor2 = get_subshuff_gauss_rdp(lmbda, sigma0, gamma, displaced_n)*(lmbda-1)
-    
-    return stable_logsumexp([factor1]+[factor2])/(lmbda-1)
+    factor1 = (
+        get_subshuff_gauss_rdp(lmbda, sigma0, gamma, 1) * (lmbda - 1) + chernoff_factor
+    )
+    factor2 = get_subshuff_gauss_rdp(lmbda, sigma0, gamma, displaced_n) * (lmbda - 1)
+
+    return stable_logsumexp([factor1] + [factor2]) / (lmbda - 1)
 
 
 class ShuffGaussRDPtoDP:
@@ -211,6 +218,7 @@ class SubShuffGaussRDPtoDP(ShuffGaussRDPtoDP):
     def get_subshuff(self):
         self.RDPs_int = self.subshuff(self.shuffn, self.RDPs_int)
 
+
 class SubGaussRDPtoDP(SubShuffGaussRDPtoDP):
     """Subsampled Gaussian (no shuffling effect)
 
@@ -221,11 +229,13 @@ class SubGaussRDPtoDP(SubShuffGaussRDPtoDP):
         _type_: _description_
     """
 
-    def __init__(self, sigma0: float, n: int, shuffn: int, m: int, verbose: bool = True) -> None:
+    def __init__(
+        self, sigma0: float, n: int, shuffn: int, m: int, verbose: bool = True
+    ) -> None:
         super().__init__(sigma0, n, shuffn, m, verbose)
-    
+
     def shuff(self, shuffn, rdps_int):
-        self.shuffrdpfunc = lambda x: x/(2*self.sigma0**2)
+        self.shuffrdpfunc = lambda x: x / (2 * self.sigma0**2)
         if rdps_int.any() == False:
             rdps_int = self.get_rdps(rdps_int, self.shuffrdpfunc)
         return rdps_int
@@ -273,106 +283,136 @@ class ApproxSCIGaussRDPtoDP(SubShuffGaussRDPtoDP):
                     factor2 = [(i - 1) * self.subshuffRDPs_int[i - 1]]
                     self.RDPs_int[i - 1] = stable_logsumexp(factor1 + factor2) / (i - 1)
 
+
 class FastShuffGaussRDPtoDP:
     def __init__(
-        self, sigma0: float, shuffn: int, m: int, m_max = 100, verbose: bool = True
+        self, sigma0: float, shuffn: int, m: int, m_max=100, verbose: bool = True
     ) -> None:
         self.shuffn = shuffn
         self.m = m  # initial maxlmbda to evaluate
         self.m_max = m_max
         self.sigma0 = sigma0
-        self.lmbdas= np.linspace(1, self.m, self.m).astype(int)
+        self.lmbdas = np.linspace(1, self.m, self.m).astype(int)
         self.RDPs_int = np.zeros_like(
             self.lmbdas, float
         )  # store shuffle rdp from **lmbda=1** without composition
         self.verbose = verbose
-        self.rdp = partial(shuffle_gauss_rdp, sigma0 = self.sigma0, n = self.shuffn)
+        self.rdp = partial(shuffle_gauss_rdp, sigma0=self.sigma0, n=self.shuffn)
 
     def get_eps_fast(self, delta, coeff):
 
         _check_delta(delta)
-            
-        self.RDPs_int = np.zeros_like(self.lmbdas, float)
-        self.RDPs_int[self.m-1] = self.rdp(self.m)* coeff
-        self.RDPs_int[self.m-2] = self.rdp(self.m-1)* coeff
 
-        while self.m <= self.m_max and (fun_int(self.m, delta, coeff, self.RDPs_int)\
-                                        - fun_int(self.m-1, delta, coeff, self.RDPs_int) < 0):
-            # double m 
+        self.RDPs_int = np.zeros_like(self.lmbdas, float)
+        self.RDPs_int[self.m - 1] = self.rdp(self.m) * coeff
+        self.RDPs_int[self.m - 2] = self.rdp(self.m - 1) * coeff
+
+        while self.m <= self.m_max and (
+            fun_int(self.m, delta, coeff, self.RDPs_int)
+            - fun_int(self.m - 1, delta, coeff, self.RDPs_int)
+            < 0
+        ):
+            # double m
             if self.verbose:
-                print(f'doubling m to {self.m*2}')
+                print(f"doubling m to {self.m*2}")
             new_alphas = range(self.m + 1, self.m * 2 + 1, 1)
-            self.lmbdas = np.concatenate((self.lmbdas, np.array(new_alphas)))  # array of integers
+            self.lmbdas = np.concatenate(
+                (self.lmbdas, np.array(new_alphas))
+            )  # array of integers
             self.m = self.m * 2
-            self.RDPs_int = np.concatenate(( self.RDPs_int, np.zeros_like(new_alphas,float)))
-            self.RDPs_int[self.m-1] = self.rdp(self.m)* coeff
-            self.RDPs_int[self.m-2] = self.rdp(self.m-1)* coeff
+            self.RDPs_int = np.concatenate(
+                (self.RDPs_int, np.zeros_like(new_alphas, float))
+            )
+            self.RDPs_int[self.m - 1] = self.rdp(self.m) * coeff
+            self.RDPs_int[self.m - 2] = self.rdp(self.m - 1) * coeff
 
         if self.verbose:
-            print(f'm is {self.m}.')
+            print(f"m is {self.m}.")
             if self.m > self.m_max:
-                warnings.warn(f'm_max exceedeed.')
+                warnings.warn(f"m_max exceedeed.")
 
-        def bisection(imin:int, imax:int):
+        def bisection(imin: int, imax: int):
             # bisection to find minimum
-        
-            imid = imin + (imax - imin) //2
+
+            imid = imin + (imax - imin) // 2
 
             if imid == imin or imid == imax:
                 return imid
-            self.RDPs_int[imid-2] = self.rdp(imid-1)* coeff 
-            self.RDPs_int[imid-1] = self.rdp(imid)* coeff 
+            self.RDPs_int[imid - 2] = self.rdp(imid - 1) * coeff
+            self.RDPs_int[imid - 1] = self.rdp(imid) * coeff
 
-            if fun_int(imid-1, delta, coeff, self.RDPs_int) > fun_int(imid, delta, coeff, self.RDPs_int):
+            if fun_int(imid - 1, delta, coeff, self.RDPs_int) > fun_int(
+                imid, delta, coeff, self.RDPs_int
+            ):
                 return bisection(imid, imax)
             else:
                 return bisection(imin, imid)
-        
-        bestlmbda = bisection(2,self.m)
 
-        if  bestlmbda == self.m:
-                if self.verbose:
-                    warnings.warn('Warning: Reach quadratic upper bound: m_max.')
-        
+        bestlmbda = bisection(2, self.m)
+
+        if bestlmbda == self.m:
+            if self.verbose:
+                warnings.warn("Warning: Reach quadratic upper bound: m_max.")
+
         return fun_int(bestlmbda, delta, coeff, self.RDPs_int), bestlmbda
+
 
 class FastSubShuffGaussRDPtoDP(FastShuffGaussRDPtoDP):
     def __init__(
-        self, sigma0: float, n:int, shuffn: int, 
-        m: int = 10, m_max:int = 100, verbose: bool = True
+        self,
+        sigma0: float,
+        n: int,
+        shuffn: int,
+        m: int = 10,
+        m_max: int = 100,
+        verbose: bool = True,
     ) -> None:
         self.shuffn = shuffn
-        self.m = m  
+        self.m = m
         self.m_max = m_max
         self.sigma0 = sigma0
-        self.poissrate = shuffn/n
-        self.lmbdas= np.linspace(1, self.m, self.m).astype(int)
+        self.poissrate = shuffn / n
+        self.lmbdas = np.linspace(1, self.m, self.m).astype(int)
         self.RDPs_int = np.zeros_like(
             self.lmbdas, float
         )  # store shuffle rdp from **lmbda=1** without composition
         self.verbose = verbose
 
-        self.rdp = partial(get_subshuff_gauss_rdp, sigma0 = self.sigma0, gamma= self.poissrate,
-        subno = self.shuffn )
+        self.rdp = partial(
+            get_subshuff_gauss_rdp,
+            sigma0=self.sigma0,
+            gamma=self.poissrate,
+            subno=self.shuffn,
+        )
+
 
 class FASCIGaussRDPtoDP(FastShuffGaussRDPtoDP):
     def __init__(
-        self, sigma0: float, n:int, shuffn, 
-        m: int = 10, m_max = 100,
-        error = 0.5,
-        verbose: bool = True
+        self,
+        sigma0: float,
+        n: int,
+        shuffn,
+        m: int = 10,
+        m_max=100,
+        error=0.5,
+        verbose: bool = True,
     ) -> None:
         self.shuffn = shuffn
-        self.m = m  
+        self.m = m
         self.m_max = m_max
         self.sigma0 = sigma0
-        self.poissrate = shuffn/n
+        self.poissrate = shuffn / n
         self.error = error
-        self.lmbdas= np.linspace(1, self.m, self.m).astype(int)
+        self.lmbdas = np.linspace(1, self.m, self.m).astype(int)
         self.RDPs_int = np.zeros_like(
             self.lmbdas, float
         )  # store shuffle rdp from **lmbda=1** without composition
         self.verbose = verbose
 
-        self.rdp = partial(get_approxsci_gauss_rdp, sigma0 = self.sigma0, gamma= self.poissrate,
-        subno = self.shuffn, error = self.error )
+        self.rdp = partial(
+            get_approxsci_gauss_rdp,
+            sigma0=self.sigma0,
+            gamma=self.poissrate,
+            subno=self.shuffn,
+            error=self.error,
+        )
