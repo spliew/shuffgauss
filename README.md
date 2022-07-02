@@ -6,7 +6,7 @@ The following implementations are available:
 - `SubShuffGaussRDPtoDP`: Subsampled Shuffle Gaussian mechanism
 - `ApproxSCIGaussRDPtoDP`: [Shuffled Check-in](http://arxiv.org/abs/2206.03151) Gaussian mechanism
 
-The following *faster* implementations are available in beta version:
+The following *faster* (in the sense that, binary search is used instead of computing a pre-determined list of moment) implementations are available in beta version:
 - `FastShuffGaussRDPtoDP`: Shuffle Gaussian mechanism
 - `FastSubShuffGaussRDPtoDP`: Subsampled Shuffle Gaussian mechanism
 - `FASCIGaussRDPtoDP`: [Shuffled Check-in](http://arxiv.org/abs/2206.03151) Gaussian mechanism
