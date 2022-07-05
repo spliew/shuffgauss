@@ -68,7 +68,7 @@ def _subshuff_gauss_rdp(lmbda: int, gamma: float, shuffRDPs: np.ndarray):
     term2 = 2 * np.log(gamma) + logBinomC[lmbda, 2] + np.log(min_term2)
 
     termj = [
-        j * np.log(gamma) + logBinomC[lmbda, j] + (j - 1) * shuffRDPs[j - 1]
+        j * np.log(gamma) + logBinomC[lmbda, j] + (j - 1) * shuffRDPs[j - 1] + np.log(2)
         for j in lmbdas[2:]
     ]
 

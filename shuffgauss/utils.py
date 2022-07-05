@@ -4,7 +4,7 @@ import numpy as np
 from scipy.special import gammaln
 from scipy.stats import norm
 
-__all__ = ["logstirling", "findCombinations", "fun_int", "accel_asc"]
+__all__ = ["logstirling", "fun_int", "accel_asc"]
 
 
 def logstirling(l: int, k: int):
