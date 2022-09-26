@@ -75,23 +75,27 @@ def calibrateAnalyticGaussianMechanism(epsilon, delta, GS, tol = 1.e-12):
 
     return sigma
 
-import warnings
 if __name__ == "__main__":
     n = 6e4
-    sample_rate = 1e-1
+    batch_size = 60
+    epoch = 10
+    sample_rate = batch_size/60000
     m = int(n * sample_rate)
-    epsilon = 1
-    delta = 1/n
+    epsilon = 12
+    delta = 1e-5
     mxlmbda = 20
-    updates = 1000
+    updates = int(60000*epoch/batch_size)
 
     sigma = calibrateAnalyticGaussianMechanism(epsilon, delta, 1)
     print(n, sample_rate, m, epsilon, delta, updates, sigma)
-    ssg = sg.ApproxSCIGaussRDPtoDP(sigma, n, m, mxlmbda)
+    # ssg = sg.SubShuffGaussRDPtoDP(sigma, n, m, mxlmbda)
+    ssg = sg.SubShuffGaussRDPtoDP(5, 10, 1, mxlmbda)
     ssg.get_subshuff()
-    total_eps, lmbda = ssg.get_eps(delta, updates)
-    total_eps_10, lmbda_10 = ssg.get_eps(delta, 10*updates)
-    total_eps_01, lmbda_01 = ssg.get_eps(delta, 0.1*updates)
-    print(f'eps: {total_eps}, lmbda:{lmbda}, updates: {updates}, sigma (2 times gs):{2*sigma}')
-    print(f'eps: {total_eps_10}, lmbda:{lmbda_10}, updates: {10*updates}, sigma (2 times gs):{2*sigma}')
-    print(f'eps: {total_eps_01}, lmbda:{lmbda_01}, updates: {0.1*updates}, sigma (2 times gs):{2*sigma}')
+    total_eps, lmbda = ssg.get_eps(delta, 5)
+    # total_eps, lmbda = ssg.get_eps(delta, updates)
+    # total_eps_10, lmbda_10 = ssg.get_eps(delta, 10*updates)
+    # total_eps_01, lmbda_01 = ssg.get_eps(delta, 0.1*updates)
+    print(f'eps: {total_eps}, lmbda:{lmbda}, updates: {updates}')
+    # print(f'eps: {total_eps_10}, lmbda:{lmbda_10}, updates: {10*updates}, sigma (2 times gs):{2*sigma}')
+    # print(f'eps: {total_eps_01}, lmbda:{lmbda_01}, updates: {0.1*updates}, sigma (2 times gs):{2*sigma}')
+    
