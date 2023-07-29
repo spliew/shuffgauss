@@ -4,12 +4,10 @@ The following implementations are available:
 - `SubGaussRDPtoDP`: Subsampled Gaussian mechanism
 - `ShuffGaussRDPtoDP`: Shuffle Gaussian mechanism
 - `SubShuffGaussRDPtoDP`: Subsampled Shuffle Gaussian mechanism
-- `ApproxSCIGaussRDPtoDP`: [Shuffled Check-in](http://arxiv.org/abs/2206.03151) Gaussian mechanism
 
 The following *faster* (in the sense that, binary search is used instead of computing a pre-determined list of moment) implementations are available in beta version:
 - `FastShuffGaussRDPtoDP`: Shuffle Gaussian mechanism
 - `FastSubShuffGaussRDPtoDP`: Subsampled Shuffle Gaussian mechanism
-- `FASCIGaussRDPtoDP`: [Shuffled Check-in](http://arxiv.org/abs/2206.03151) Gaussian mechanism
 
 Our implementation particularly allows fast comparisons of (epsilon, delta) at different numbers of composition. See [Usage](#usage).
 
@@ -42,27 +40,19 @@ sf.get_shuff() # prepare the calculation
 print(sf.get_eps(delta, 1)) # calculate epsilon when no of composition is 1, return a tuple of (epsilon, lmbda_min)
 print(sf.get_eps(delta, 10)) # calculate epsilon when no of composition is 10
 
-# shuffled checkin gaussian mechanism
-sci = sg.ApproxSCIGaussRDPtoDP(sigma, n, m, mxlmbda)
-sci.get_subshuff() # prepare the calculation
-print(sci.get_eps(delta, 1)) # calculate epsilon when no of composition is 1
-print(sci.get_eps(delta, 10)) # calculate epsilon when no of composition is 10
-
-# fast shuffled checkin gaussian mechanism
-fastsci = sg.FASCIGaussRDPtoDP(sigma, n, m)
-print(fastsci.get_eps_fast(delta,1000))
-
 ```
 
 # Citation
 If you use this code in your work, please cite our paper:
 
 ```
-@article{liew2022shuffle,
-  title={Shuffle Gaussian Mechanism for Differential Privacy},
-  author={Liew, Seng Pei and Takahashi, Tsubasa},
-  journal={arXiv preprint arXiv:2206.09569},
-  year={2022}
+@misc{liew2023privacy,
+      title={Privacy Amplification via Shuffled Check-Ins}, 
+      author={Seng Pei Liew and Satoshi Hasegawa and Tsubasa Takahashi},
+      year={2023},
+      eprint={2206.03151},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
 }
 ```
 
